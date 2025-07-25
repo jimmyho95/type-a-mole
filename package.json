@@ -3,9 +3,10 @@
     "build": "webpack",
     "start": "webpack serve",
     "server": "nodemon server/server.js",
-    "dev": "concurrently \"webpack --watch\" \"nodemon server/server.js\""
+    "dev": "concurrently \"webpack serve\" \"nodemon server/server.js\""
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
