@@ -1,21 +1,22 @@
 import React from "react";
 
-const levels = ['noob', 'mid', 'heroic', 'legendary']
-
-function DifficultySelector( {difficulty, onChange}) {
+function DifficultySelector({ difficulty, onChange }) {
+    const difficulties = ["noob", "mid", "heroic", "legendary"];
 
     return (
         <div className="difficulty-options">
-            <div className="options">
-                {levels.map(level => (
+            <label className="difficulty-label">Select Difficulty:</label>
+            <div className="difficulty-buttons">
+                {difficulties.map((level) => (
                     <button
                         key={level}
-                        className={`difficulty-btn ${difficulty === level ? 'active' : ''}`}
+                        className={`difficulty-btn ${level} ${difficulty === level ? "active" : ""
+                            }`}
                         onClick={() => onChange({ target: { value: level } })}
-                        >
-                        {level}
+                    >
+                        {level.charAt(0).toUpperCase() + level.slice(1)}
                     </button>
-                    ))}
+                ))}
             </div>
         </div>
     );
