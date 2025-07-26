@@ -138,7 +138,7 @@ type-a-mole/
    ["apple", "banana", "cherry", "programming", "javascript"]
    ```
 
-## 🎯 How to Run Locally
+## How to Run Locally
 
 ### Development Mode
 
