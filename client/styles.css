@@ -1,0 +1,43 @@
+.game-area {
+    width: 90vw;
+    height: 60vh;
+    margin: 5vh auto;
+    border: 2px solid black;
+    background-color: white;
+
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.floating-word {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+
+.difficulty-selector {
+    background-color: white;
+    padding: 10px;
+    z-index: 999;
+}
+
+.correct-letter{
+    color: green;
+    font-weight: bold;
+}
+
+.incorrect-letter {
+    color: red;
+    font-weight: bold;
+}
+
+.untyped-letter {
+    color: gray;
+    font-weight: bold;
+}
