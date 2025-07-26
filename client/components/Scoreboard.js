@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-function Scoreboard({ score }) {
+const Scoreboard = () => {
+    const [scores, setScores] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/scores')
+            .then(res => res.json())
+            .then(data => setScores(data.topScores))
+            .catch(err => console.error('Error fetching scores: ', err));
+    }, []);
+
     return (
-        <div className="score-board">
-            <h2>Score</h2>
-            <div className="score-value">{score}</div>
+        <div className="scoreboard">
+            <ul>
+                {scores.map((score, index) => (
+                    <li key={score._id || index}>
+                        <strong>{score.player}:</strong> {score.score} pts ({score.wpm} wpm)
+                    </li>
+                ))}
+            </ul>
         </div>
     )
 }

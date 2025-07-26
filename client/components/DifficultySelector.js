@@ -1,19 +1,22 @@
 import React from "react";
 
+const levels = ['noob', 'mid', 'heroic', 'legendary']
+
 function DifficultySelector( {difficulty, onChange}) {
 
     return (
-        <div className="difficulty-selector">
-            <label htmlFor="difficulty">Difficulty: </label>
-            <select id="difficulty" onChange={onChange}
-                value={difficulty}>
-                <option value="dev">Dev</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                <option value="extreme">Extreme</option>
-
-            </select>
+        <div className="difficulty-options">
+            <div className="options">
+                {levels.map(level => (
+                    <button
+                        key={level}
+                        className={`difficulty-btn ${difficulty === level ? 'active' : ''}`}
+                        onClick={() => onChange({ target: { value: level } })}
+                        >
+                        {level}
+                    </button>
+                    ))}
+            </div>
         </div>
     );
 }

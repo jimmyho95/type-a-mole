@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import DifficultySelector from './DifficultySelector';
 import GameBoard from './GameBoard';
 import Scoreboard from './Scoreboard';
+import Leaderboard from './Leaderboard';
 
 function GameContainer() {
-    const [difficulty, setDifficulty] = useState('medium');
+    const [difficulty, setDifficulty] = useState('mid');
     const [currentScore, setScore] = useState(0);
 
     return (
@@ -13,12 +14,13 @@ function GameContainer() {
             difficulty={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
             />
-            <Scoreboard score={currentScore}/>
+            {/* <Scoreboard score={currentScore}/> */}
             <GameBoard 
                 difficulty={difficulty}
                 currentScore={currentScore}
                 setScore={setScore}
             />
+            <Leaderboard/>
         </div>
     )
 }

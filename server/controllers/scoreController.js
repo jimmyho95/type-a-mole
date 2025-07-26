@@ -3,10 +3,10 @@ const Score = require('../models/Score');
 const scoreController = {};
 
 scoreController.saveScore = async (req, res, next) => {
-    const { player, score, wpm } = req.body;
+    const { player, score, wpm, difficulty } = req.body;
 
     try {
-        const newScore = await Score.create({ player, score, wpm });
+        const newScore = await Score.create({ player, score, wpm, difficulty });
         res.locals.savedScore = newScore;
         return next();
     } catch (err) {
@@ -21,7 +21,8 @@ scoreController.saveScore = async (req, res, next) => {
 scoreController.getScores = async (req, res, next) => {
     try {
         const scores = await Score.find().sort({ score: -1}).limit(10);
-        res.locals.topScores = scores;
+        const recentScores = await Score.find().sort({ createdAt: -1 }).limit(10);
+        res.locals.topScores = { topScores: scores, recentScores };
         return next();
     } catch (err) {
         return next({
