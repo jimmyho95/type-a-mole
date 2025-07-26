@@ -14,7 +14,7 @@ I built this game because I wanted to make typing practice actually fun. Words r
 - The screen flashes green when you get a word, red when you're too slow
 - Four difficulty levels from "Noob" to "Legendary"
 
-### The Cool Stuff
+### Features
 - **Smart timing**: How long the word is affects how much time you have to get it onto the screen
 - **Multiple word themes**: Want to practice with Simpsons quotes? Plants? Car brands? All included
 - **Real-time visual feedback**: See exactly which letters you're getting right as you type
@@ -215,9 +215,8 @@ This ensures longer words get proportionally more time while maintaining difficu
 ### Technical Challenges Solved
 
 1. Initially struggled with timing synchronization between word generation and user input.
-3. Dynamic timing of word lengths took significantly more time than expected to implement.
-2. Had to refactor scoring system multiple times to handle multi-word phrases properly.
-4. Flash effects were more trouble than expected.
+2. Dynamic timing of word lengths took significantly more time than expected to implement.
+3. Flash effects were more trouble than expected.
 
 ## API Documentation
 
