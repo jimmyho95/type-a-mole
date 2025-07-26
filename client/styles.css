@@ -5,13 +5,13 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   background-color: black;
   color: white;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   height: 100%;
 }
-
 
 /* ===== App Layout ===== */
 .app-container {
@@ -32,17 +32,16 @@ html, body {
   width: 95vw;
 }
 
-h1, h2 {
+h1,
+h2 {
   color: white;
   margin-bottom: 1rem;
 }
-
 
 /* ===== Game Container ===== */
 .game-container {
   margin-top: 1rem;
 }
-
 
 /* ===== Game Area ===== */
 .game-area {
@@ -56,6 +55,34 @@ h1, h2 {
   overflow: hidden;
   position: relative;
   width: 100%;
+  transition: border 0.2s ease;
+  position: relative;
+}
+
+.game-area .timer {
+  background-color: rgba(20, 20, 20, 0.6);
+  border-radius: 6px;
+  bottom: 8px;
+  right: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: monospace;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 100;
+}
+
+.flash-success {
+    border: 3px solid #22c55e !important;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.6) !important;
+    transition: all 0.1s ease-in-out;
+}
+
+.flash-fail {
+    border: 3px solid #ef4444 !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6) !important;
+    transition: all 0.1s ease-in-out;
 }
 
 .floating-word {
@@ -68,6 +95,7 @@ h1, h2 {
 .timer {
   background-color: rgba(20, 20, 20, 0.6);
   border-radius: 6px;
+  right: 12px;
   bottom: 8px;
   color: rgba(255, 255, 255, 0.75);
   font-family: monospace;
@@ -75,9 +103,11 @@ h1, h2 {
   padding: 4px 8px;
   pointer-events: none;
   position: absolute;
-  right: 12px;
 }
 
+.stop-btn:hover {
+    background: #cc3333 !important;
+}
 
 /* ===== Typing Feedback ===== */
 .correct-letter {
@@ -95,6 +125,26 @@ h1, h2 {
   font-weight: bold;
 }
 
+/* ===== score tracker ===== */
+.score-tracker {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 100;
+  font-weight: bold;
+}
+
+@keyframes pop {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 0;
+  }
+}
 
 /* ===== Name Input ===== */
 .name-input {
@@ -117,13 +167,12 @@ h1, h2 {
   border-color: #0f0;
 }
 
-
 /* ===== Difficulty Selector ===== */
 .difficulty-options {
   align-items: center;
   display: flex;
   flex-direction: column;
-  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   gap: 8px;
   margin-bottom: 1rem;
 }
@@ -152,57 +201,58 @@ h1, h2 {
 }
 
 .difficulty-btn.noob.active {
-    background-color: limegreen; 
-    color: black;
-    border-color: limegreen;
+  background-color: limegreen;
+  color: black;
+  border-color: limegreen;
 }
 
 .difficulty-btn.mid.active {
-    background-color: yellow; 
-    border-color: yellow;
+  background-color: yellow;
+  border-color: yellow;
 }
 
 .difficulty-btn.heroic.active {
-    background-color: orange;
-    color: white;
-    border-color: orange;
+  background-color: orange;
+  color: white;
+  border-color: orange;
 }
 
 .difficulty-btn.legendary.active {
-    background-color: red;
-    color: white;
-    border-color: red;
+  background-color: red;
+  color: white;
+  border-color: red;
 }
 
 /* ===== Word List Selector ===== */
 .wordlist-options {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 1rem;
 }
 
 .wordlist-btn {
-    background: none;
-    color: #888;
-    border: 1px solid #333;
-    padding: 2px 8px;
-    font-size: 0.85rem;
-    font-family: monospace;
-    cursor: pointer;
-    transition: all 0.15s ease-in-out;
+  background: none;
+  color: #888;
+  border: 1px solid #333;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
 }
 
 .wordlist-btn:hover {
-    background-color: #222;
-    color: #fff;
+  background-color: #222;
+  color: #fff;
 }
 
 .wordlist-btn.active {
-    background-color: #0ff; /* cyan or customize */
-    color: black;
-    font-weight: bold;
-    border-color: #0ff;
+  background-color: #0ff;
+  /* cyan or customize */
+  color: black;
+  font-weight: bold;
+  border-color: #0ff;
 }
 
 /* ===== Leaderboard ===== */
@@ -224,7 +274,8 @@ table {
   width: 100%;
 }
 
-th, td {
+th,
+td {
   border-bottom: 1px solid white;
   font-size: 0.9rem;
   padding: 0.25rem 0.5rem;
@@ -235,7 +286,6 @@ td {
   overflow-wrap: anywhere;
 }
 
-
 /* ===== Scoreboard ===== */
 .scoreboard {
   margin-top: 2rem;
@@ -245,7 +295,6 @@ td {
   list-style: none;
   padding: 0;
 }
-
 
 /* ===== Tabs ===== */
 .tabs {

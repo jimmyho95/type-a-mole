@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 
-// const WORDS = ['apple', 'banana', 'cat', 'dog', 'egg', 'fire', 'giant', 'hippo']
+// Updated timeout calculation system
 const DIFFICULTY = {
-    noob: 3000,
-    mid: 2000,
-    heroic: 1500,
-    legendary: 1000,
+    noob: { base: 2000, perChar: 300 },    // 2s + 300ms per character
+    mid: { base: 1500, perChar: 200 },     // 1.5s + 200ms per character  
+    heroic: { base: 1200, perChar: 150 },  // 1.2s + 150ms per character
+    legendary: { base: 1000, perChar: 100 } // 1s + 100ms per character
 };
 
 function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
@@ -19,8 +19,21 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
     const [playerName, setPlayerName] = useState("");
     const gameAreaRef = useRef(null);
     const [isGameOver, setIsGameOver] = useState(false);
+    const [flashType, setFlashType] = useState(null); // 'success' or 'fail'
     const finalScoreRef = useRef(0);
     const finalWpmRef = useRef(0);
+
+    // Function to trigger flash effect
+    const triggerFlash = (type) => {
+        setFlashType(type);
+        setTimeout(() => setFlashType(null), 300); // Flash duration
+    };
+
+    // Function to calculate timeout based on word length and difficulty
+    const calculateTimeout = (word, difficulty) => {
+        const config = DIFFICULTY[difficulty];
+        return config.base + (word.length * config.perChar);
+    };
 
     //load word list
     useEffect(() => {
@@ -37,21 +50,37 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         fetchWords();
     }, [selectedList]);
 
-    //word list selected, restart
+    //word list selected, restart game when wordList is updated
     useEffect(() => {
-        if (!isGameActive && !isGameOver) return;
+        if (!wordList.length || (!isGameActive && !isGameOver)) return;
 
-        // Reset everything when a new list is chosen
+        // Reset everything when a new list is loaded
         clearInterval(intervalRef.current);
         setIsGameActive(false);
         setIsGameOver(false);
         setActiveWord("");
         setTypedLetters([]);
         setTimeLeft(30);
-        setScore(0); // optional: clear score on list change
+        setScore(0);
         startGame();
-        console.log(`Switched to list: ${selectedList}`);
-    }, [selectedList]);
+        console.log(`Switched to list: ${selectedList}, word count: ${wordList.length}`);
+    }, [wordList]); // Changed from selectedList to wordList
+
+    // Reset game when difficulty changes
+    useEffect(() => {
+        if (!isGameActive && !isGameOver) return;
+
+        // Reset everything when difficulty changes
+        clearInterval(intervalRef.current);
+        setIsGameActive(false);
+        setIsGameOver(false);
+        setActiveWord("");
+        setTypedLetters([]);
+        setTimeLeft(30);
+        setScore(0);
+        startGame();
+        console.log(`Switched to difficulty: ${difficulty}`);
+    }, [difficulty]);
 
     //update ref whenever currentScore changes
     useEffect(() => {
@@ -69,6 +98,16 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         setTimeout(() => {
             gameAreaRef.current?.focus();
         }, 0);
+    };
+
+    //stop game manually
+    const stopGame = () => {
+        clearInterval(intervalRef.current);
+        setIsGameActive(false);
+        setActiveWord("");
+        setTypedLetters([]);
+        setTimeLeft(30);
+        // Don't reset score so player can see their progress
     };
 
     //end game
@@ -120,14 +159,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         return () => clearInterval(timer);
     }, [isGameActive]);
 
-    useEffect(() => {
-        if (isGameActive) {
-            clearInterval(intervalRef.current);
-            startInterval();
-        }
-    }, [difficulty]);
-
-    //generate word
+    // Updated generateWord function
     const generateWord = () => {
         if (!wordList.length) return;
 
@@ -139,20 +171,30 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         setActiveWord(word.toLowerCase());
         setPosition({ top: `${top}%`, left: `${left}%` });
         setTypedLetters([]);
-    };
 
-    //fix for words being skipped
-    const startInterval = () => {
-        const delay = DIFFICULTY[difficulty] || 2000;
-        intervalRef.current = setInterval(generateWord, delay);
-    };
-
-    //rebuild interval
-    const handleWordComplete = () => {
-        setScore((prev) => prev + 1);
+        // Clear existing interval and start new one with word-specific timeout
         clearInterval(intervalRef.current);
-        generateWord();
-        startInterval();
+        const timeout = calculateTimeout(word.toLowerCase(), difficulty);
+        intervalRef.current = setTimeout(() => {
+            // Word timed out - trigger red flash
+            triggerFlash('fail');
+            generateWord();
+        }, timeout);
+    };
+
+    // Updated startInterval function (now starts first word)
+    const startInterval = () => {
+        generateWord(); // This will set its own timeout
+    };
+
+    // Updated handleWordComplete function
+    const handleWordComplete = () => {
+        // Count actual words (split by spaces and filter out empty strings)
+        const wordCount = activeWord.split(' ').filter(word => word.length > 0).length;
+        setScore((prev) => prev + wordCount);
+        triggerFlash('success'); // Green flash for success
+        clearInterval(intervalRef.current);
+        generateWord(); // This will set its own timeout
     };
 
     //event listener
@@ -207,10 +249,43 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
     return (
         <div
             ref={gameAreaRef}
-            className="game-area"
+            className={`game-area ${flashType === 'success' ? 'flash-success' : flashType === 'fail' ? 'flash-fail' : ''}`}
             tabIndex={0}
             onKeyDown={handleKeyDown}
         >
+            {/* Always visible score tracker - bottom left */}
+            <div className="score-tracker">
+                <span className="score">Score: {currentScore}</span>
+            </div>
+
+            {/* Stop button - top right during active game */}
+            {isGameActive && (
+                <button 
+                    className="stop-btn"
+                    onClick={stopGame}
+                    style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: '#ff4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        padding: '4px 8px',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                        zIndex: 100
+                    }}
+                >
+                    Stop
+                </button>
+            )}
+
+            {/* Timer in separate element - bottom right */}
+            {isGameActive && (
+                <div className="timer">Time Left: {timeLeft}s</div>
+            )}
+
             {isGameOver ? (
                 <div className="end-screen">
                     <h2>Game Over</h2>
@@ -233,30 +308,23 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
                     </button>
                 </div>
             ) : !isGameActive ? (
-                (
-                    <div className="game-stats">
-                        <span className="score"> Score: {currentScore}</span>
-                        <span className="timer">Time Left: {timeLeft}s</span>
-                    </div>
-                ) && (
-                    <div className="start-screen">
-                        <input
-                            className="name-input"
-                            type="text"
-                            value={playerName}
-                            onChange={(e) => setPlayerName(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" && playerName.trim()) {
-                                    startGame();
-                                }
-                            }}
-                            placeholder="Enter your name"
-                        />
-                    </div>
-                )
+                <div className="start-screen">
+                    <input
+                        className="name-input"
+                        type="text"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && playerName.trim()) {
+                                startGame();
+                            }
+                        }}
+                        placeholder="Enter your name"
+                    />
+                </div>
             ) : (
                 <>
-                    <div className="timer">Time Left: {timeLeft}s</div>
+                    {/* Active game - show floating words */}
                     {activeWord && (
                         <div className="floating-word" style={position}>
                             {renderColoredWord(activeWord, typedLetters)}

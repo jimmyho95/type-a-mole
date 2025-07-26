@@ -22,7 +22,7 @@ scoreController.getScores = async (req, res, next) => {
     try {
         const scores = await Score.find().sort({ score: -1}).limit(10);
         const recentScores = await Score.find().sort({ createdAt: -1 }).limit(10);
-        res.locals.topScores = { topScores: scores, recentScores };
+        res.locals.topScores = { topScores: scores, recentScores: recentScores };
         return next();
     } catch (err) {
         return next({
