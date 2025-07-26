@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const WORDS = ['apple', 'banana', 'cat', 'dog', 'egg', 'fire', 'giant', 'hippo']
+// const WORDS = ['apple', 'banana', 'cat', 'dog', 'egg', 'fire', 'giant', 'hippo']
 const DIFFICULTY = {
     noob: 3000,
     mid: 2000,
@@ -10,6 +10,7 @@ const DIFFICULTY = {
 
 function GameBoard({ difficulty, currentScore, setScore }) {
     const [activeWord, setActiveWord] = useState(''); //active word
+    const [wordList, setWordList] = useState([]);
     const [position, setPosition] = useState({ top: '0%', left: '0%' }); //active word position
     const [typedLetters, setTypedLetters] = useState([]); //user input
     const intervalRef = useRef(null); //current interval ref
@@ -20,6 +21,23 @@ function GameBoard({ difficulty, currentScore, setScore }) {
     const [isGameOver, setIsGameOver] = useState(false);
     const finalScoreRef = useRef(0);
     const finalWpmRef = useRef(0);
+
+    //load word list
+    useEffect(() => {
+    const fetchWords = async () => {
+        try {
+            const res = await fetch('/api/words/list?list=defaultWords');
+            const data = await res.json();
+            setWordList(data);
+        } catch (err) {
+            console.error('Failed to load word list:', err);
+        }
+    };
+
+    fetchWords();
+    }, []);
+
+    
 
     //update ref whenever currentScore changes
     useEffect(() => {
@@ -97,11 +115,14 @@ function GameBoard({ difficulty, currentScore, setScore }) {
 
     //generate word
     const generateWord = () => {
-        const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+        if (!wordList.length) return;
+
+        const randIndex = Math.floor(Math.random() * wordList.length)
+        const word = wordList[randIndex]
         const top = Math.floor(Math.random() * 80) + 5
         const left = Math.floor(Math.random() * 80) + 5
 
-        setActiveWord(word);
+        setActiveWord(word.toLowerCase());
         setPosition({ top: `${top}%`, left: `${left}%` });
         setTypedLetters([]);
     };
@@ -196,17 +217,17 @@ function GameBoard({ difficulty, currentScore, setScore }) {
                     <span className="timer">Time Left: {timeLeft}s</span>
                 </div> &&
                 <div className="start-screen">
-                    <input
+                    <input className="name-input"
                         type="text"
                         value={playerName}
                         onChange={(e) => setPlayerName(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && playerName.trim()) {
+                                startGame();
+                            }
+                        }}
                         placeholder="Enter your name"
-                        className="name-input"
                     />
-                    <button onClick={startGame} className="start-btn" disabled={!playerName.trim()}
-                    >
-                        Start Game
-                    </button>
                 </div>
             ) : (
                 <>

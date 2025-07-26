@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require ('cors');
 const connectDB = require('./models/connectDB');
 const scoreRoutes = require('./routes/scoreRoutes');
+const wordRoutes = require('./routes/wordRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,6 +20,7 @@ app.use(express.json());
     //     res.send("server ready");
     // });
     
+app.use('/api/words', wordRoutes);
 app.use('/api/scores', scoreRoutes);
 
 
