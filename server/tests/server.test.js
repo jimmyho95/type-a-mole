@@ -1,7 +1,7 @@
 // tests/server.test.js
 const request = require('supertest');
 const express = require('express');
-const app = require('../server'); // make sure your server exports the app instance, not app.listen()
+const app = require('../app'); // make sure your server exports the app instance, not app.listen()
 
 // Wrap with describe block for each route
 describe('Word List API', () => {
