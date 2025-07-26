@@ -35,7 +35,6 @@ function GameContainer() {
                 onChange={setSelectedList}
                 wordLists={availableLists}
             />
-            {/* <Scoreboard score={currentScore}/> */}
             <GameBoard 
                 difficulty={difficulty}
                 currentScore={currentScore}

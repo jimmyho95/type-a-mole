@@ -1,5 +1,4 @@
 import React from 'react';
-import Scoreboard from './components/Scoreboard';
 import GameContainer from './components/GameContainer';
 import './styles.css'
 
