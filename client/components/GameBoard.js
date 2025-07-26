@@ -11,7 +11,7 @@ const DIFFICULTY = {
 function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
     const [activeWord, setActiveWord] = useState(""); //active word
     const [wordList, setWordList] = useState([]);
-    const [position, setPosition] = useState({ top: "0%", left: "0%" }); //active word position
+    const [position, setPosition] = useState({ top: "0%", left: "0%" }); //word position on board
     const [typedLetters, setTypedLetters] = useState([]); //user input
     const intervalRef = useRef(null); //current interval ref
     const [isGameActive, setIsGameActive] = useState(false);
@@ -19,17 +19,17 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
     const [playerName, setPlayerName] = useState("");
     const gameAreaRef = useRef(null);
     const [isGameOver, setIsGameOver] = useState(false);
-    const [flashType, setFlashType] = useState(null); // 'success' or 'fail'
+    const [flashType, setFlashType] = useState(null); // success condition
     const finalScoreRef = useRef(0);
     const finalWpmRef = useRef(0);
 
-    // Function to trigger flash effect
+    // flash effect for border
     const triggerFlash = (type) => {
         setFlashType(type);
-        setTimeout(() => setFlashType(null), 300); // Flash duration
+        setTimeout(() => setFlashType(null), 300); // flash duration
     };
 
-    // Function to calculate timeout based on word length and difficulty
+    // Function to calculate timeout for word based on difficulty
     const calculateTimeout = (word, difficulty) => {
         const config = DIFFICULTY[difficulty];
         return config.base + (word.length * config.perChar);
@@ -63,10 +63,9 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         setTimeLeft(30);
         setScore(0);
         startGame();
-        console.log(`Switched to list: ${selectedList}, word count: ${wordList.length}`);
-    }, [wordList]); // Changed from selectedList to wordList
+    }, [wordList]); 
 
-    // Reset game when difficulty changes
+    // reset game when difficulty changes
     useEffect(() => {
         if (!isGameActive && !isGameOver) return;
 
@@ -79,10 +78,9 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         setTimeLeft(30);
         setScore(0);
         startGame();
-        console.log(`Switched to difficulty: ${difficulty}`);
     }, [difficulty]);
 
-    //update ref whenever currentScore changes
+    //update ref for post
     useEffect(() => {
         finalScoreRef.current = currentScore;
         finalWpmRef.current = currentScore * 2;
@@ -92,9 +90,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
     const startGame = () => {
         setIsGameActive(true);
         setTimeLeft(30);
-        generateWord();
         startInterval();
-
         setTimeout(() => {
             gameAreaRef.current?.focus();
         }, 0);
@@ -110,7 +106,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         // Don't reset score so player can see their progress
     };
 
-    //end game
+    //end game normally
     const endGame = async () => {
         setIsGameActive(false);
         setIsGameOver(true);
@@ -141,7 +137,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         }
     };
 
-    //timer
+    //game duration
     useEffect(() => {
         if (!isGameActive) return;
 
@@ -159,7 +155,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         return () => clearInterval(timer);
     }, [isGameActive]);
 
-    // Updated generateWord function
+    // generate word from list and calculate 
     const generateWord = () => {
         if (!wordList.length) return;
 
@@ -172,7 +168,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         setPosition({ top: `${top}%`, left: `${left}%` });
         setTypedLetters([]);
 
-        // Clear existing interval and start new one with word-specific timeout
+        // Clear existing interval 
         clearInterval(intervalRef.current);
         const timeout = calculateTimeout(word.toLowerCase(), difficulty);
         intervalRef.current = setTimeout(() => {
@@ -184,7 +180,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
 
     // Updated startInterval function (now starts first word)
     const startInterval = () => {
-        generateWord(); // This will set its own timeout
+        generateWord(); 
     };
 
     // Updated handleWordComplete function
@@ -194,7 +190,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
         setScore((prev) => prev + wordCount);
         triggerFlash('success'); // Green flash for success
         clearInterval(intervalRef.current);
-        generateWord(); // This will set its own timeout
+        generateWord();
     };
 
     //event listener
@@ -207,8 +203,8 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
             return;
         }
 
-        //input tracking
-        if (/^[a-zA-Z ]$/.test(key)) {
+        //input tracking for entire word
+        if (/^[a-zA-Z0-9 ]$/.test(key)) {
             const nextIndex = typedLetters.length;
             const expectedChar = activeWord[nextIndex];
             const updated = [...typedLetters, key];
@@ -217,16 +213,15 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
                 setTypedLetters(updated);
 
                 if (updated.join("") === activeWord) {
-                    console.log("Correct! +1 point");
                     handleWordComplete();
                 }
             } else {
-                console.log("Incorrect letter!");
                 setTypedLetters(updated);
             }
         }
     };
 
+    //current input letter visual tracker
     const renderColoredWord = (word, input) => {
         return word.split("").map((char, index) => {
             let className = "untyped-letter";
@@ -253,12 +248,12 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
             tabIndex={0}
             onKeyDown={handleKeyDown}
         >
-            {/* Always visible score tracker - bottom left */}
+            {/* score tracker bottom left */}
             <div className="score-tracker">
                 <span className="score">Score: {currentScore}</span>
             </div>
 
-            {/* Stop button - top right during active game */}
+            {/* stop button */}
             {isGameActive && (
                 <button 
                     className="stop-btn"
@@ -281,7 +276,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
                 </button>
             )}
 
-            {/* Timer in separate element - bottom right */}
+            {/* Timer bottom right*/}
             {isGameActive && (
                 <div className="timer">Time Left: {timeLeft}s</div>
             )}
@@ -301,7 +296,6 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
                             setPlayerName("");
                             setTimeLeft(30);
                             setIsGameActive(false);
-                            setPlayerName("");
                         }}
                     >
                         Play Again
@@ -324,7 +318,7 @@ function GameBoard({ difficulty, currentScore, setScore, selectedList }) {
                 </div>
             ) : (
                 <>
-                    {/* Active game - show floating words */}
+                    {/* floating words */}
                     {activeWord && (
                         <div className="floating-word" style={position}>
                             {renderColoredWord(activeWord, typedLetters)}

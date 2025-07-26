@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DifficultySelector from './DifficultySelector';
 import GameBoard from './GameBoard';
-import Scoreboard from './Scoreboard';
 import Leaderboard from './Leaderboard';
 import WordListSelector from './WordListSelector';
 
